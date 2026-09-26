@@ -1,0 +1,1004 @@
+/*
+ * Bento layout — Apple-style tiles, Coffee palette (one neutral + one accent).
+ * All classes are prefixed with `hv-`.
+ */
+.hv-root {
+  --bg: #0f0e0d;
+  --tile: #1c1a18;
+  --tile-2: #262320;
+  --ink: #f5f2ee;
+  --muted: #9a948d;
+  --line: rgba(255, 255, 255, 0.07);
+  --accent: #d49a5f;
+  --accent-soft: rgba(212, 154, 95, 0.13);
+  --on-accent: #1a120b;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --glow: rgba(212, 154, 95, 0.1);
+
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  color-scheme: dark;
+  font:
+    15px/1.45 -apple-system,
+    BlinkMacSystemFont,
+    'SF Pro Text',
+    'SF Pro Display',
+    'Inter',
+    'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+/* minimal reset (replaces Tailwind's preflight) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  background: #0f0e0d;
+}
+:where(.hv-root) :where(img) {
+  display: block;
+  max-width: 100%;
+}
+:where(.hv-root) :where(h1, h2, p) {
+  margin: 0;
+}
+.hv-root svg {
+  display: block;
+}
+
+/* ---------- grid: rows are half-tiles so contact tiles can be flat ---------- */
+.hv-wrap {
+  --cols: 6;
+  --gap: 18px;
+  /* grows on big screens but always keeps some breathing room at the sides */
+  --w: min(100vw - 64px, max(1320px, 88vw), 1560px);
+  width: var(--w);
+  margin: 0 auto;
+  padding: 28px 0 24px;
+}
+@media (max-width: 1300px) {
+  .hv-wrap {
+    --cols: 4;
+    --gap: 16px;
+    --w: calc(100vw - 40px);
+    padding-top: 20px;
+  }
+}
+@media (max-width: 600px) {
+  .hv-wrap {
+    --cols: 2;
+    --gap: 12px;
+    --w: calc(100vw - 28px);
+    padding-top: 12px;
+  }
+}
+.hv-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.hv-brand {
+  font-weight: 600;
+  font-size: 15px;
+}
+.hv-bento {
+  --cell: calc((var(--w) - (var(--cols) - 1) * var(--gap)) / var(--cols));
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(var(--cols), 1fr);
+  /* rows stop growing past ~96px so tiles stay compact on big screens */
+  grid-auto-rows: min(calc((var(--cell) - var(--gap)) / 2), 96px);
+  grid-auto-flow: dense;
+  perspective: 1400px;
+}
+.hv-s22 {
+  grid-column: span 2;
+  grid-row: span 4;
+}
+.hv-s23 {
+  grid-column: span 2;
+  grid-row: span 3;
+}
+.hv-s42 {
+  grid-column: span 4;
+  grid-row: span 4;
+}
+.hv-flat {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+@media (min-width: 601px) and (max-width: 1300px) {
+  .hv-cert {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+  .hv-glance {
+    grid-column: span 4;
+  }
+}
+@media (max-width: 600px) {
+  .hv-bento {
+    grid-auto-rows: auto;
+  }
+  .hv-bento > .hv-t {
+    grid-row: auto;
+    grid-column: span 2;
+  }
+  .hv-glance {
+    min-height: 76px;
+  }
+}
+
+/* ---------- tile ---------- */
+.hv-t {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 22px;
+  border-radius: 28px;
+  background: var(--tile);
+  box-shadow:
+    var(--shadow),
+    inset 0 0 0 1px var(--line);
+  color: inherit;
+  text-decoration: none;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s;
+  animation: hv-pop 0.8s cubic-bezier(0.2, 0.9, 0.25, 1.1) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+@keyframes hv-pop {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+}
+.hv-t::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s;
+  background: radial-gradient(
+    380px circle at var(--mx, 50%) var(--my, 50%),
+    var(--glow),
+    transparent 55%
+  );
+}
+.hv-t:hover::before {
+  opacity: 1;
+}
+.hv-t > * {
+  position: relative;
+}
+a.hv-t:active {
+  transform: scale(0.98) !important;
+}
+@media (min-width: 1400px) {
+  .hv-t {
+    border-radius: 32px;
+    padding: 26px;
+  }
+}
+@media (max-width: 600px) {
+  .hv-t {
+    border-radius: 24px;
+    padding: 18px;
+  }
+}
+
+.hv-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.hv-push {
+  margin-top: auto;
+}
+.hv-btn-round {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--tile-2);
+  color: var(--ink);
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.3s,
+    color 0.3s;
+}
+.hv-btn-round svg {
+  width: 13px;
+  height: 13px;
+}
+a.hv-t:hover .hv-btn-round,
+.hv-pcard:hover .hv-btn-round {
+  transform: rotate(45deg);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.hv-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  background: var(--tile-2);
+  color: var(--ink);
+}
+.hv-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.hv-icon.ink {
+  background: var(--ink);
+  color: var(--tile);
+}
+.hv-icon.acc {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.hv-in {
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- profile ---------- */
+.hv-avatar-wrap {
+  position: relative;
+  width: 124px;
+  height: 124px;
+  flex: none;
+}
+@media (min-width: 601px) and (max-width: 1300px) {
+  .hv-avatar-wrap {
+    width: 104px;
+    height: 104px;
+  }
+}
+@media (min-width: 1301px) and (max-width: 1360px) {
+  .hv-avatar-wrap {
+    width: 108px;
+    height: 108px;
+  }
+}
+@media (min-width: 1361px) and (max-width: 1599px) {
+  .hv-avatar-wrap {
+    width: 128px;
+    height: 128px;
+  }
+}
+@media (min-width: 1600px) {
+  .hv-avatar-wrap {
+    width: 132px;
+    height: 132px;
+  }
+}
+@media (max-width: 600px) {
+  .hv-avatar-wrap {
+    width: 136px;
+    height: 136px;
+  }
+}
+.hv-avatar {
+  position: absolute;
+  inset: 7px;
+  border-radius: 30px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--tile-2);
+}
+.hv-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hv-avatar-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: hv-spin 14s linear infinite;
+}
+.hv-avatar-ring rect {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-dasharray: 4 7;
+  stroke-linecap: round;
+}
+@keyframes hv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.hv-hello {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.hv-name {
+  font-size: clamp(30px, 2.9vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  margin: 4px 0 10px;
+}
+.hv-name span {
+  color: var(--muted);
+}
+.hv-role {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 34ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hv-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: var(--tile-2);
+}
+.hv-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  position: relative;
+  flex: none;
+}
+.hv-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: hv-ping 1.8s infinite;
+}
+@keyframes hv-ping {
+  to {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+/* ---------- tile header (now + projects) ---------- */
+.hv-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.hv-title {
+  font-size: clamp(20px, 1.8vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+.hv-sub {
+  font-size: 13px;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.hv-see-all {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.hv-see-all span {
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hv-see-all:hover span {
+  transform: translateX(4px);
+}
+
+/* ---------- currently working on ---------- */
+.hv-now-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 3), 1fr);
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+.hv-now-item {
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-height: 0;
+  background: var(--tile-2);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hv-now-item:hover {
+  transform: translateY(-3px);
+}
+.hv-k {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.hv-now-item b {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+.hv-now-item p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.hv-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.hv-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.hv-tag {
+  font-size: 11.5px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 1px 7px;
+  background: var(--tile);
+}
+/* study: semester pills */
+.hv-terms {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* same frosted box as the project "Now" box */
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(28, 26, 24, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--line);
+}
+.hv-pills {
+  display: flex;
+  gap: 8px;
+}
+.hv-pills {
+  gap: 10px;
+}
+.hv-pills span {
+  flex: 1;
+  max-width: 88px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(212, 154, 95, 0.6);
+  background: rgba(212, 154, 95, 0.08);
+}
+.hv-pills span.done {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.hv-pills span.now {
+  position: relative;
+  border-color: var(--accent);
+  background: linear-gradient(90deg, var(--accent) 50%, transparent 50%);
+  animation: hv-breathe 2.4s ease-in-out infinite;
+}
+@keyframes hv-breathe {
+  50% {
+    box-shadow: 0 0 0 4px rgba(212, 154, 95, 0.15);
+  }
+}
+.hv-terms small {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* project: "Now" line over a soft halftone */
+.hv-now-item {
+  position: relative;
+  overflow: hidden;
+}
+.hv-now-item > * {
+  position: relative;
+}
+.hv-now-art {
+  position: absolute !important;
+  inset: 0;
+  opacity: 0.55;
+  -webkit-mask-image: radial-gradient(
+    120% 90% at 100% 100%,
+    #000 10%,
+    transparent 70%
+  );
+  mask-image: radial-gradient(120% 90% at 100% 100%, #000 10%, transparent 70%);
+  pointer-events: none;
+}
+.hv-nowline {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(28, 26, 24, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--line);
+}
+.hv-nowlabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hv-nowline p {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.hv-nowline small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.hv-ringrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+.hv-ring {
+  width: 46px;
+  height: 46px;
+  flex: none;
+}
+.hv-ring circle {
+  fill: none;
+  stroke-width: 4.5;
+}
+.hv-ring .trk {
+  stroke: var(--line);
+}
+.hv-ring .val {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  stroke-dasharray: 113.1;
+  transition: stroke-dashoffset 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hv-ring text {
+  font-size: 10.5px;
+  font-weight: 600;
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.hv-ringrow small {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+@media (max-width: 600px) {
+  .hv-now-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .hv-now-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .hv-now-item p,
+  .hv-now-item .hv-tags,
+  .hv-ringrow small {
+    display: none;
+  }
+  .hv-ringrow {
+    margin: 0;
+    order: -1;
+  }
+}
+
+/* ---------- github projects tile: visual cards ---------- */
+.hv-pgrid {
+  display: grid;
+  grid-template-columns: repeat(var(--pc, 2), minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+.hv-pcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 16px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--tile-2);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s;
+}
+.hv-pcard > * {
+  position: relative;
+}
+.hv-pcard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.8);
+}
+/* halftone fills the card and fades in from the bottom-right corner */
+.hv-pbg {
+  position: absolute !important;
+  inset: 0;
+  opacity: 0.6;
+  -webkit-mask-image: radial-gradient(
+    130% 100% at 100% 100%,
+    #000 15%,
+    transparent 72%
+  );
+  mask-image: radial-gradient(
+    130% 100% at 100% 100%,
+    #000 15%,
+    transparent 72%
+  );
+  pointer-events: none;
+}
+.hv-ptop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 30px;
+}
+.hv-ptop .hv-btn-round {
+  position: static;
+}
+.hv-pcard:hover .hv-btn-round {
+  transform: rotate(45deg);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+/* frosted info box at the bottom, like the project "Now" box */
+.hv-pinfo {
+  margin-top: auto;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(28, 26, 24, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--line);
+}
+.hv-halftone {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-origin: 75% 70%;
+}
+.hv-halftone circle {
+  fill: rgba(245, 242, 238, 0.12);
+}
+.hv-halftone circle.on {
+  fill: var(--accent);
+}
+.hv-pcard:hover .hv-halftone {
+  transform: scale(1.06);
+}
+/* plain frosted glass over the dots: soft blur, faint dark tint, no sheen */
+.hv-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(28, 26, 24, 0.12);
+  -webkit-backdrop-filter: blur(2.5px);
+  backdrop-filter: blur(2.5px);
+  transition:
+    backdrop-filter 0.6s,
+    -webkit-backdrop-filter 0.6s;
+}
+.hv-pcard:hover .hv-glass {
+  -webkit-backdrop-filter: blur(0.5px);
+  backdrop-filter: blur(0.5px);
+}
+
+.hv-plang {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--tile) 70%, transparent);
+}
+.hv-pbody {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.hv-pname {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hv-pbody p {
+  font-size: 13.5px;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hv-pbody p.empty {
+  font-style: italic;
+  opacity: 0.75;
+}
+.hv-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+/* 3-4 projects: tighter cards so the 2x2 grid fits */
+.hv-pgrid.dense .hv-pcard {
+  padding: 12px;
+  gap: 6px;
+}
+.hv-pgrid.dense .hv-pbody p {
+  -webkit-line-clamp: 1;
+}
+.hv-pgrid.dense .hv-pinfo {
+  padding: 7px 12px;
+}
+@media (max-width: 600px) {
+  .hv-pgrid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+  .hv-pcard {
+    min-height: 190px;
+  }
+}
+
+/* ---------- flat contact tiles + wide bar ---------- */
+.hv-flat {
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+.hv-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.hv-handle {
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hv-flat .hv-btn-round {
+  position: static;
+  margin-left: auto;
+  flex: none;
+}
+.hv-stats {
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+}
+.hv-stats > div {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.hv-big {
+  font-size: clamp(22px, 1.9vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+/* compact "At a glance": three numbers spread across a short tile */
+.hv-glance .hv-stats {
+  margin: 0;
+  width: 100%;
+  justify-content: space-around;
+  gap: 12px;
+}
+.hv-glance .hv-big {
+  font-size: clamp(22px, 1.7vw, 28px);
+}
+
+/* ---------- stack + lists ---------- */
+.hv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 16px;
+  align-content: flex-start;
+}
+.hv-chip {
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--tile-2);
+  border-radius: 10px;
+  padding: 6px 11px;
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.3s,
+    color 0.3s;
+}
+.hv-chip:hover {
+  transform: translateY(-2px);
+  background: var(--ink);
+  color: var(--tile);
+}
+.hv-chip.more {
+  background: var(--accent);
+  color: var(--on-accent);
+  cursor: help;
+}
+.hv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+}
+.hv-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: inherit;
+  text-decoration: none;
+}
+a.hv-row:hover b {
+  color: var(--accent);
+}
+.hv-row .hv-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+.hv-row .hv-icon svg {
+  width: 19px;
+  height: 19px;
+}
+.hv-row b {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  transition: color 0.2s;
+}
+.hv-row span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------- loading skeleton ---------- */
+.hv-skel {
+  background: var(--tile-2);
+  border-radius: 10px;
+  animation: hv-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes hv-shimmer {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.hv-foot {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 30px 16px 10px;
+}
+
+/* ---------- error page ---------- */
+.hv-error {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.hv-error .hv-t {
+  width: min(560px, 100%);
+  padding: 40px;
+  gap: 10px;
+}
+.hv-error-code {
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+}
+.hv-error-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+.hv-error-sub {
+  color: var(--muted);
+}
+.hv-error-sub a {
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .hv-now-item:has(.hv-terms),
+  .hv-now-item:has(.hv-nowline) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .hv-now-item .hv-nowline p {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hv-pills span.now {
+    animation: none;
+  }
+  .hv-t,
+  .hv-avatar-ring,
+  .hv-dot::after,
+  .hv-skel {
+    animation: none;
+  }
+}
