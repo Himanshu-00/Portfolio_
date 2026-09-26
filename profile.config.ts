@@ -27,7 +27,7 @@ const CONFIG = {
   resume: {
     // Empty fileUrl hides the Resume tile.
     fileUrl:
-      'https://drive.google.com/file/d/1edyVICh2rfbVz3AnPuUiO7CU4av-UdOp/view?usp=sharing',
+      'https://drive.google.com/file/d/1RDBmeyq-PCM3JhPkQMZcVQPwweUFwAyh/view?usp=sharing',
   },
 
   skills: [
